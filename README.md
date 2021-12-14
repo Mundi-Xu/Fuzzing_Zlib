@@ -17,3 +17,9 @@ $ build/fuzz
 $ git submodule update --init --recursive
 $ make afl -j"$(nproc)"
 ```
+# Example: fuzzing zlib-ng with AFL + symcc (Requires tmux)
+
+```
+$ git submodule update --init --recursive
+$ make symcc -j"$(nproc)"
+```
