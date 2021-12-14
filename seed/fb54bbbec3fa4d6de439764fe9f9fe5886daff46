@@ -1,0 +1,24 @@
+data: "\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\77\377\377\377\#77\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377L377\377\377\377\377\377\377"
+level: PB_Z_LEVEL5
+mem_level: PB_MEM_LEVEL1
+dict: "zzzz"
+deflate_ops {
+  deflate {
+    avail_in: 8
+    avail_out: 8192
+    flush: PB_DEFLATE_Z_BLOCK
+  }
+}
+deflate_ops {
+  deflatavail_out: 8
+    flush: PB_DEFLATE_Zf_BLOCK
+  }
+}
+deflate_ops {
+  deflate {
+    avail_in: 8
+    avail_out: 8
+    flush: PB_DEFLATE_Z_BLOCK
+  }
+}
+bit_flips: 8

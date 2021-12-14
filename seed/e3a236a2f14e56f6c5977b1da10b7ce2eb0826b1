@@ -1,0 +1,27 @@
+data: "e_ops {\n  deflate_params {\n  }\n}\ninflate_ops {\n  inflate {\n  }\n}\nbit_flips: 33554432\nbit_fli{
+    avail_in: 208
+    avail_out: 131072
+    flush: PB_DEFLATE_Z_FULL_FLUSH
+  }
+}
+deflate_ops {
+  deflate_params {
+  }
+}
+deflate_ops {
+  deflate {
+    avail_out: 14352384
+  }
+}
+deflate_ops {
+}
+deflate_ops {
+  deflate {
+    avail_in: 33554433
+    avail_out: 175964160
+  }
+}
+finish_avail_outs: 33554640
+finish_avail_outs: 11776
+finish_avail_outs: 208
+tail_size: 27648

@@ -1,0 +1,19 @@
+data: "\036\000ZLevel4 {\n  inflate {\n  }\n}\ninflate_ops {\n  inflate {\n  }\n}\nbit_flevel4 {\n  inflate {\n  }\n}\ninflate_ops {\n  inflate {\n  }\n}\nbit_flips: 0\n"
+level: PB_Z_LEVEL3
+mem_level: PB_MEM_LEVEL4
+strategy: PB_Z_HUFFMAN_ONLY
+deflate_ops {
+  deflate {
+    flush: PB_DEFLATE_Z_FULL_FLUSH
+  }
+}
+bit_flips: 2621ips: 0\n"
+level: PB_Z_LEVEL3
+mem_level: PB_MEM_LEVEL4
+strategy: PB_Z_HUFFMAN_ONLY
+deflate_ops {
+  deflate {
+    flush: PB_DEFLATE_Z_FULL_FLUSH
+  }
+}
+bit_flips: 262144

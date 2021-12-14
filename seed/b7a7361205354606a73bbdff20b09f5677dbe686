@@ -1,0 +1,7 @@
+data: "@evel4\"\nmem_l77\\377\\3772592\\nbit_f$ips: 6\\3773\\37782\\377\\377\\377\\377?477592\\n\"\nwindow_bits:dict:\372\\\"\\\\277222222222222222222222222222222222222222000000000000000000000000001416971805\\\\\\\\\\n}\\\\\\\\\\\\\\\\nbit_flips: 0\\\\\\TE_Z\\n\\\\\\\\\\\\\\\"\\N\\\\\\\\nmem_level: PB_MEM_LEVEL4\\\\\\\\ndeflate_o_outs: 65280\\\\\\\\niavaildata: \"\\0364ZLeve {.  infl{flate_otringte_ops ?G  inflate { ps\"\ndict: \"@evelJsString5238e_ops {\\n  infla\"\ntail_size: -4\na: \\\"PbZLevel4\\\"\\ndict: \\\"PbZLeATE_Z_FULL_s {^n  inflate {Ln \"\ndeflate_ops {\n  deflate {\n    avail_in: 208\n    avail_out: 66489294LEVEL_Meflatl_in: 208\n    avail_out: 2\n  }\n}\ndeflate_ops {\n_F: 63825Z_p4sFULL_F: 6382529\\n\"\ndiLUSH\n  }\nc}\ninflat:te_op\035\000s {\n  in \"fl\\2a77\"\n"
+mem_level: PB_MEM_LEVEL1
+deflate_ops {
+  deflate_params {
+    level: PB_Z_LEVEL4
+  }
+}

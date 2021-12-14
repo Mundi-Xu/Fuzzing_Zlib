@@ -1,0 +1,25 @@
+data: "@evel4\"\nmem_level: PB_MEM_LEVEL1\ndict: \"\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^_^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\s77\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\"\ndeflate_ops {\n  deflate_params {\n    avail_out: 14352384\n  }\n}\ndeflate_ops {\n  deflate {\n    flush: PB_DEFLATE_Z_FULL_FLUSH\n  }\n}\ninflate_ops {\n  infla"
+level: PB_Z_LEVEL3
+window_bits: PB_WB_GZIP
+mem_level: PB_MEM_LEVEL1
+strategy: PB_Z_FIXED
+dict: "@evel4\"\nmem_level: PB_MEM_LEVEL1\ndict: \"\\377\\377\\377\\377\\377\\377\\377\\377\\377\\3377\data: "Pddddddddddddddddddddddddddddddddddddddddddddddddd\233dddddddddddddddddddbZLevel4"
+strategy: PB_Z_RLE
+dict: "PdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddbZLevel4"
+deflate_ops {
+}
+deflate_ops {
+  deflate_params {
+    level: PB_Z_LEVEL6
+  }
+}
+deflate_ops {
+}
+inflate_ops {
+}
+inflate_ops {
+}
+bit_flips: 0
+bit_flips: 0
+\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\"\nde(flate_ops {\n  deflate_params {\n    avail_out: 14352384\n  }\n}\ndeflate_ops {\n  deflate {\n    flush: PB_DEFLATE_Z_FULL_FLUSH\n  }\n}\ninflate_ops {\n  infla"
+bit_flips: ˆ543515680
