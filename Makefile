@@ -184,12 +184,12 @@ fmt:
 clean:
         rm -rf $(ZLIB)
         rm -rf $(ZLIB_AFL)
-		rm -rf $(ZLIB_SYMCC)
+	rm -rf $(ZLIB_SYMCC)
         rm -f $(OUTPUT)*.o
         rm -f $(OUTPUT)*.a
-		rm -f $(OUTPUT)fuzz $(OUTPUT)fuzz_libprotobuf_mutator $(OUTPUT)fuzz_afl $(OUTPUT)fuzz_symcc
+	rm -f $(OUTPUT)fuzz $(OUTPUT)fuzz_libprotobuf_mutator $(OUTPUT)fuzz_afl $(OUTPUT)fuzz_symcc
 
 .PHONY: distclean
 distclean: clean
-		rm -rf $(AFL_OUTPUT)
+	rm -rf $(AFL_OUTPUT)
         rm -rf $(OUTPUT)
