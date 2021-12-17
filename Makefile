@@ -1,10 +1,11 @@
-# Required environment variables:
+# Optional environment variables:
+# - WORKDIR: path to fuzzing directory
 # - ZLIB: path to a zlib build directory configured with libFuzzer
 # - ZLIB_AFL: path to a (different) zlib build directory configured with AFL
 # - ZLIB_SYMCC: path to a (yet another) zlib build directory configured with SymCC
 # Required programs in $PATH:
-# - clang
-# - clang++
+# - clang / clang++
+# - afl-fuzz / afl-clang-lto / afl-clang-lto++
 
 WORKDIR?=
 ifeq ($(WORKDIR),)
@@ -20,6 +21,7 @@ CXX=clang++
 AFLCC=afl-clang-lto
 AFLCXX=afl-clang-lto++
 AFL_FUZZ=afl-fuzz
+AFL_OUTPUT=$(OUTPUT)afl_out
 PROTOBUF_PATH=$(OUTPUT)libprotobuf-mutator/build/external.protobuf
 PROTOC=$(PROTOBUF_PATH)/bin/protoc
 C_CXX_FLAGS=-fPIC -Wall -Wextra -Werror -O2 -g
@@ -46,7 +48,7 @@ $(OUTPUT)fuzz_libprotobuf_mutator: $(OUTPUT)fuzz_target_libprotobuf_mutator.o $(
 
 .PHONY: afl
 afl: $(OUTPUT)fuzz_afl
-	$(AFL_FUZZ) -i in -o out $(OUTPUT)fuzz_afl
+	$(AFL_FUZZ) -i seed -o $(AFL_OUTPUT) -- $(OUTPUT)fuzz_afl
 
 FUZZ_AFL_OBJS=$(OUTPUT)fuzz_target_afl.o $(OUTPUT)afl_driver.o $(LIBZ_A_AFL)
 
@@ -168,12 +170,26 @@ $(OUTPUT)symcc/build/bin/symcc_fuzzing_helper: \
 
 .PHONY: symcc
 symcc: $(OUTPUT)fuzz_symcc $(OUTPUT)fuzz_afl $(OUTPUT)symcc/build/bin/symcc_fuzzing_helper
-	rm -rf out/afl-master out/afl-secondary out/symcc
+	rm -rf $(AFL_OUTPUT)/master $(AFL_OUTPUT)/slave1 $(AFL_OUTPUT)/symcc_1
 	tmux \
-		new-session "$(AFL_FUZZ) -M afl-master -i in -o out -m none -- $(OUTPUT)fuzz_afl" \; \
-		new-window "$(AFL_FUZZ) -S afl-secondary -i in -o out -m none -- $(OUTPUT)fuzz_afl" \; \
-		new-window "sleep 3 && (OUTPUT)symcc/build/bin/symcc_fuzzing_helper -o out -a afl-secondary -n symcc -v -- $(OUTPUT)fuzz_symcc"
+		new-session "$(AFL_FUZZ) -M master -i seed -o $(AFL_OUTPUT) -m none -- $(OUTPUT)fuzz_afl" \; \
+		new-window "$(AFL_FUZZ) -S slave1 -i seed -o $(AFL_OUTPUT) -m none -- $(OUTPUT)fuzz_afl" \; \
+		new-window "(OUTPUT)symcc/build/bin/symcc_fuzzing_helper -o $(AFL_OUTPUT) -a slave1 -n symcc_1 -v -- $(OUTPUT)fuzz_symcc"
 
 .PHONY: fmt
 fmt:
 	clang-format -i -style=llvm fuzz_target.cpp symcc_driver.c
+
+.PHONY: clean
+clean:
+        rm -rf $(ZLIB)
+        rm -rf $(ZLIB_AFL)
+		rm -rf $(ZLIB_SYMCC)
+        rm -f $(OUTPUT)*.o
+        rm -f $(OUTPUT)*.a
+		rm -f $(OUTPUT)fuzz $(OUTPUT)fuzz_libprotobuf_mutator $(OUTPUT)fuzz_afl $(OUTPUT)fuzz_symcc
+
+.PHONY: distclean
+distclean: clean
+		rm -rf $(AFL_OUTPUT)
+        rm -rf $(OUTPUT)
