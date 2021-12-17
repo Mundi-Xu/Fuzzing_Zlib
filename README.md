@@ -7,19 +7,18 @@ libprotobuf-mutator.
 # Example: fuzzing zlib-ng with libFuzzer
 
 ```
-$ git submodule update --init --recursive
-$ make all -j"$(nproc)"
-$ build/fuzz
+git submodule update --init --recursive
+WORKDIR=build make libfuzzer
 ```
 # Example: fuzzing zlib-ng with AFL
 
 ```
-$ git submodule update --init --recursive
-$ make afl -j"$(nproc)"
+git submodule update --init --recursive
+WORKDIR=build OUTPUT_AFL=./build/afl_out make afl
 ```
 # Example: fuzzing zlib-ng with AFL + symcc (Requires tmux)
 
 ```
-$ git submodule update --init --recursive
-$ make symcc -j"$(nproc)"
+git submodule update --init --recursive
+WORKDIR=build OUTPUT_AFL=./build/afl_out make symcc
 ```

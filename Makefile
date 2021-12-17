@@ -1,15 +1,16 @@
 # Optional environment variables:
-# - WORKDIR: path to fuzzing directory
+# - WORKDIR: path to compile directory
 # - ZLIB: path to a zlib build directory configured with libFuzzer
 # - ZLIB_AFL: path to a (different) zlib build directory configured with AFL
 # - ZLIB_SYMCC: path to a (yet another) zlib build directory configured with SymCC
+# - OUTPUT_AFL: path to afl fuzzing directory
 # Required programs in $PATH:
 # - clang / clang++
 # - afl-fuzz / afl-clang-lto / afl-clang-lto++
 
 WORKDIR?=
 ifeq ($(WORKDIR),)
-	OUTPUT=build/
+    OUTPUT=build/
 else
 	OUTPUT=$(WORKDIR)/
 endif
@@ -21,7 +22,7 @@ CXX=clang++
 AFLCC=afl-clang-lto
 AFLCXX=afl-clang-lto++
 AFL_FUZZ=afl-fuzz
-AFL_OUTPUT=$(OUTPUT)afl_out
+OUTPUT_AFL?=$(OUTPUT)afl_out
 PROTOBUF_PATH=$(OUTPUT)libprotobuf-mutator/build/external.protobuf
 PROTOC=$(PROTOBUF_PATH)/bin/protoc
 C_CXX_FLAGS=-fPIC -Wall -Wextra -Werror -O2 -g
@@ -40,29 +41,24 @@ SYMCC=$(ABS_OUTPUT)symcc/build/symcc
 .PHONY: all
 all: $(OUTPUT)fuzz $(OUTPUT)fuzz_libprotobuf_mutator $(OUTPUT)fuzz_afl $(OUTPUT)fuzz_symcc
 
-$(OUTPUT)fuzz: $(OUTPUT)fuzz_target.o $(LIBZ_A)
-	$(CXX) $(LDFLAGS) -fsanitize=address,fuzzer $(OUTPUT)fuzz_target.o -o $@ $(LIBZ_A)
-
 $(OUTPUT)fuzz_libprotobuf_mutator: $(OUTPUT)fuzz_target_libprotobuf_mutator.o $(OUTPUT)fuzz_target.pb.o $(LIBZ_A)
 	$(CXX) $(LDFLAGS) -fsanitize=address,fuzzer $(OUTPUT)fuzz_target_libprotobuf_mutator.o $(OUTPUT)fuzz_target.pb.o -o $@ $(LIBZ_A) -lprotobuf-mutator-libfuzzer -lprotobuf-mutator -lprotobuf
 
+.PHONY: libfuzzer
+libfuzzer: $(OUTPUT)fuzz
+	$(OUTPUT)fuzz $(OUTPUT)fuzz_out seed -print_final_stats=1
+
+$(OUTPUT)fuzz: $(OUTPUT)fuzz_target.o $(LIBZ_A)
+	$(CXX) $(LDFLAGS) -fsanitize=address,fuzzer $(OUTPUT)fuzz_target.o -o $@ $(LIBZ_A)
+
 .PHONY: afl
 afl: $(OUTPUT)fuzz_afl
-	$(AFL_FUZZ) -i seed -o $(AFL_OUTPUT) -- $(OUTPUT)fuzz_afl
+	$(AFL_FUZZ) -i seed -o $(OUTPUT_AFL) -- $(OUTPUT)fuzz_afl
 
 FUZZ_AFL_OBJS=$(OUTPUT)fuzz_target_afl.o $(OUTPUT)afl_driver.o $(LIBZ_A_AFL)
 
 $(OUTPUT)fuzz_afl: $(FUZZ_AFL_OBJS)
 	AFL_USE_ASAN=1 $(AFLCXX) $(LDFLAGS) -o $@ $(FUZZ_AFL_OBJS)
-
-$(LIBZ_A): $(foreach file,$(shell git -C $(ZLIB) ls-files),$(ZLIB)/$(file))
-	cd $(ZLIB) && $(MAKE) libz.a
-
-$(LIBZ_A_AFL): $(foreach file,$(shell git -C $(ZLIB_AFL) ls-files),$(ZLIB_AFL)/$(file))
-	cd $(ZLIB_AFL) && $(MAKE) libz.a
-
-$(LIBZ_A_SYMCC): $(foreach file,$(shell git -C $(ZLIB_SYMCC) ls-files),$(ZLIB_SYMCC)/$(file))
-	cd $(ZLIB_SYMCC) && $(MAKE) libz.a
 
 $(OUTPUT)fuzz_target.o: fuzz_target.cpp | fmt
 	$(CC) $(CFLAGS) -x c -fsanitize=address,fuzzer -DZLIB_CONST -I$(OUTPUT) -c fuzz_target.cpp -o $@
@@ -106,33 +102,28 @@ $(OUTPUT)libprotobuf-mutator/build/Makefile: libprotobuf-mutator/CMakeLists.txt
 $(PROTOC): $(OUTPUT)libprotobuf-mutator/build/Makefile
 	cd $(OUTPUT)libprotobuf-mutator/build && $(MAKE)
 
-$(OUTPUT)zlib-ng/build-libfuzzer/Makefile: zlib-ng/CMakeLists.txt
-	mkdir -p $(OUTPUT)zlib-ng/build-libfuzzer && \
+$(ZLIB)/Makefile: zlib-ng/CMakeLists.txt
+	mkdir -p $(ZLIB) && \
 		cmake \
 			-S zlib-ng \
-			-B $(OUTPUT)zlib-ng/build-libfuzzer \
+			-B $(ZLIB) \
 			-DCMAKE_C_COMPILER=$(CC) \
 			-DCMAKE_C_FLAGS=-fsanitize=address,fuzzer-no-link \
 			$(ZLIB_NG_CMFLAGS)
 
-$(OUTPUT)zlib-ng/build-libfuzzer/libz.a: \
-		$(OUTPUT)zlib-ng/build-libfuzzer/Makefile \
-		$(foreach file,$(shell git -C zlib-ng ls-files),zlib-ng/$(file))
-	cd $(OUTPUT)zlib-ng/build-libfuzzer && $(MAKE)
+$(LIBZ_A): $(ZLIB)/Makefile
+	cd $(ZLIB) && $(MAKE)
 
-$(OUTPUT)zlib-ng/build-afl/Makefile: \
-		zlib-ng/CMakeLists.txt
-	mkdir -p $(OUTPUT)zlib-ng/build-afl && \
+$(ZLIB_AFL)/Makefile: zlib-ng/CMakeLists.txt
+	mkdir -p $(ZLIB_AFL) && \
 		AFL_USE_ASAN=1 cmake \
 			-S zlib-ng \
-			-B $(OUTPUT)zlib-ng/build-afl \
+			-B $(ZLIB_AFL) \
 			-DCMAKE_C_COMPILER=$(AFLCC) \
 			$(ZLIB_NG_CMFLAGS)
 
-$(OUTPUT)zlib-ng/build-afl/libz.a: \
-		$(OUTPUT)zlib-ng/build-afl/Makefile \
-		$(foreach file,$(shell git -C zlib-ng ls-files),zlib-ng/$(file))
-	cd $(OUTPUT)zlib-ng/build-afl && AFL_USE_ASAN=1 $(MAKE)
+$(LIBZ_A_AFL): $(ZLIB_AFL)/Makefile
+	cd $(ZLIB_AFL) && AFL_USE_ASAN=1 $(MAKE)
 
 $(OUTPUT)symcc/build/Makefile: symcc/CMakeLists.txt
 	mkdir -p $(OUTPUT)symcc/build && \
@@ -142,39 +133,34 @@ $(OUTPUT)symcc/build/Makefile: symcc/CMakeLists.txt
 		-DZ3_TRUST_SYSTEM_VERSION=ON \
 		$(SYMCC_CMFLAGS)
 
-$(SYMCC): \
-		$(OUTPUT)symcc/build/Makefile \
-		$(foreach file,$(shell git -C symcc ls-files),symcc/$(file))
+$(SYMCC): $(OUTPUT)symcc/build/Makefile
 	cd $(OUTPUT)symcc/build && $(MAKE)
 
-$(OUTPUT)zlib-ng/build-symcc/Makefile: \
+$(ZLIB_SYMCC)/Makefile: \
 		zlib-ng/CMakeLists.txt \
 		$(SYMCC)
-	mkdir -p $(OUTPUT)zlib-ng/build-symcc && \
+	mkdir -p $(ZLIB_SYMCC) && \
 		cmake \
 			-S zlib-ng \
-			-B $(OUTPUT)zlib-ng/build-symcc \
+			-B $(ZLIB_SYMCC) \
 			-DCMAKE_C_COMPILER=$(SYMCC) \
 			-DWITH_SSE2=OFF \
 			-DWITH_CRC32_VX=OFF \
 			$(ZLIB_NG_CMFLAGS)
 
-$(OUTPUT)zlib-ng/build-symcc/libz.a: \
-		$(OUTPUT)zlib-ng/build-symcc/Makefile \
-		$(foreach file,$(shell git -C zlib-ng ls-files),zlib-ng/$(file))
-	cd $(OUTPUT)zlib-ng/build-symcc && $(MAKE)
+$(LIBZ_A_SYMCC): $(ZLIB_SYMCC)/Makefile
+	cd $(ZLIB_SYMCC) && $(MAKE)
 
-$(OUTPUT)symcc/build/bin/symcc_fuzzing_helper: \
-		$(foreach file,$(shell git -C symcc/util/symcc_fuzzing_helper ls-files),symcc/util/symcc_fuzzing_helper/$(file))
+$(OUTPUT)symcc/build/bin/symcc_fuzzing_helper:
 	cargo install --root $(OUTPUT)symcc/build --path symcc/util/symcc_fuzzing_helper
 
 .PHONY: symcc
 symcc: $(OUTPUT)fuzz_symcc $(OUTPUT)fuzz_afl $(OUTPUT)symcc/build/bin/symcc_fuzzing_helper
-	rm -rf $(AFL_OUTPUT)/master $(AFL_OUTPUT)/slave1 $(AFL_OUTPUT)/symcc_1
+	rm -rf $(OUTPUT_AFL)/master $(OUTPUT_AFL)/slave1 $(OUTPUT_AFL)/symcc_1
 	tmux \
-		new-session "$(AFL_FUZZ) -M master -i seed -o $(AFL_OUTPUT) -m none -- $(OUTPUT)fuzz_afl" \; \
-		new-window "$(AFL_FUZZ) -S slave1 -i seed -o $(AFL_OUTPUT) -m none -- $(OUTPUT)fuzz_afl" \; \
-		new-window "(OUTPUT)symcc/build/bin/symcc_fuzzing_helper -o $(AFL_OUTPUT) -a slave1 -n symcc_1 -v -- $(OUTPUT)fuzz_symcc"
+		new-session "$(AFL_FUZZ) -M master -i seed -o $(OUTPUT_AFL) -m none -- $(OUTPUT)fuzz_afl" \; \
+		new-window "$(AFL_FUZZ) -S slave1 -i seed -o $(OUTPUT_AFL) -m none -- $(OUTPUT)fuzz_afl" \; \
+		new-window "(OUTPUT)symcc/build/bin/symcc_fuzzing_helper -o $(OUTPUT_AFL) -a slave1 -n symcc_1 -v -- $(OUTPUT)fuzz_symcc"
 
 .PHONY: fmt
 fmt:
@@ -182,14 +168,14 @@ fmt:
 
 .PHONY: clean
 clean:
-        rm -rf $(ZLIB)
-        rm -rf $(ZLIB_AFL)
+	rm -rf $(ZLIB)
+	rm -rf $(ZLIB_AFL)
 	rm -rf $(ZLIB_SYMCC)
-        rm -f $(OUTPUT)*.o
-        rm -f $(OUTPUT)*.a
+	rm -f $(OUTPUT)*.o
+	rm -f $(OUTPUT)*.a
 	rm -f $(OUTPUT)fuzz $(OUTPUT)fuzz_libprotobuf_mutator $(OUTPUT)fuzz_afl $(OUTPUT)fuzz_symcc
 
 .PHONY: distclean
 distclean: clean
-	rm -rf $(AFL_OUTPUT)
-        rm -rf $(OUTPUT)
+	rm -rf $(OUTPUT_AFL)
+	rm -rf $(OUTPUT)
