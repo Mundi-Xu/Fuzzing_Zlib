@@ -1,40 +1,0 @@
-data: "@evel4\"\n3777\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\3vel: PB_Z_LEVEL5
-mem_level: PB_MEM_LEVEL8
-deflate_ops {
-  deflate_params {
-    level: PB_Z_LEVEL6
-  }
-}
-deflate_ops {
-  deflate_params {
-    avail_in: 7566336
-_ops {
-  deflate_params {
-    level: PB_Z_LEVEL6
-  }
-}
-deflate_ops {
-  deflate_params {
-    avail_in: 7566336
-    avail_out: 77\\377\\377\\377\\377\"\ndeflate_ÿÿÿÿÿÿÿops {\n  deflate_params {\n    avail_out: 14352384\n  }\n}\ndeflate_ops {\n  deflate {\n    flush: PB_DEFLATE_Z_FULL_FLUSH\n }\ n}\ninflate_ops {\n  infla"
-level: PB_Z_LEVEL6: PB_MEM_LEVEL1\ndict: \"\\77\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\327\\377T\377\\377\\377\\377\\377\\377\\377\\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\\377\"\ndeflate_ops {\n  deflate_params {\n    avail_out: 14352384\n  }\n}\ndeflate_ops {\n  deflate {\n    flush: PB_DEFLATE_Z_FULL_FLUSH\n  }\n}\ninflate_odata: "@data: \"\\277\"\ndict: \"\\277\"\n"
-level: PB_Z_LEVEL5
-mem_level: PB_MEM_LEVEL8
-deflate\277\"\ndict: \"\\277\"\n"
-level: PB_Z_LEVEL5
-mem_level: PB_MEM_LEVEL8
-deflaps {\nte_ops {
-  deflate_params {
-  level: PBZ__LEVEL6
-  }
-}
-deflate_ops {
-  deflate_params {
-    avail_in: 7566336
-_ops {
-  deflate_params {
-    level:  infla PB_Z_LEVEL6
-  }
-"
-}
-deflate_ops
