@@ -10,7 +10,7 @@
 
 WORKDIR?=
 ifeq ($(WORKDIR),)
-    OUTPUT=build/
+	OUTPUT=build/
 else
 	OUTPUT=$(WORKDIR)/
 endif
