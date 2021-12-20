@@ -46,7 +46,7 @@ $(OUTPUT)fuzz_libprotobuf_mutator: $(OUTPUT)fuzz_target_libprotobuf_mutator.o $(
 
 .PHONY: libfuzzer
 libfuzzer: $(OUTPUT)fuzz
-	$(OUTPUT)fuzz $(OUTPUT)fuzz_out seed -print_final_stats=1
+	mkdir $(OUTPUT)fuzz_out && $(OUTPUT)fuzz $(OUTPUT)fuzz_out seed -print_final_stats=1
 
 $(OUTPUT)fuzz: $(OUTPUT)fuzz_target.o $(LIBZ_A)
 	$(CXX) $(LDFLAGS) -fsanitize=address,fuzzer $(OUTPUT)fuzz_target.o -o $@ $(LIBZ_A)
