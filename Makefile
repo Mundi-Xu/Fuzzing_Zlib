@@ -14,8 +14,8 @@ ifeq ($(WORKDIR),)
 else
 	OUTPUT=$(WORKDIR)/
 endif
-ABS_OUTPUT_1=$(shell mkdir -p $(OUTPUT) && cd $(OUTPUT) && pwd)
-ABS_OUTPUT=$(realpath $(ABS_OUTPUT_1))/
+TMP=$(shell mkdir -p $(OUTPUT) && cd $(OUTPUT) && pwd)
+RPATH=$(realpath $(TMP))/
 
 CC=clang
 CXX=clang++
@@ -36,7 +36,7 @@ LIBZ_A:=$(ZLIB)/libz.a
 LIBZ_A_AFL:=$(ZLIB_AFL)/libz.a
 LIBZ_A_SYMCC:=$(ZLIB_SYMCC)/libz.a
 override ZLIB_NG_CMFLAGS:=-DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_SHARED_LIBS=0 -DZLIB_COMPAT=ON $(ZLIB_NG_CMFLAGS)
-SYMCC=$(ABS_OUTPUT)symcc/build/symcc
+SYMCC=$(RPATH)symcc/build/symcc
 
 .PHONY: all
 all: $(OUTPUT)fuzz $(OUTPUT)fuzz_libprotobuf_mutator $(OUTPUT)fuzz_afl $(OUTPUT)fuzz_symcc

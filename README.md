@@ -1,4 +1,4 @@
-# zlib-fuzz
+# Fuzzing_Zlib
 
 libFuzzer fuzz target for zlib(-ng), which focuses not on a single function
 call, but rather on sequences thereof. It can work both stand-alone and with
