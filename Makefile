@@ -37,9 +37,10 @@ LIBZ_A_AFL:=$(ZLIB_AFL)/libz.a
 LIBZ_A_SYMCC:=$(ZLIB_SYMCC)/libz.a
 override ZLIB_NG_CMFLAGS:=-DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_SHARED_LIBS=0 -DZLIB_COMPAT=ON $(ZLIB_NG_CMFLAGS)
 SYMCC=$(RPATH)symcc/build/symcc
+SYMCC_FUZZING_HELPER=$(OUTPUT)symcc/build/bin/symcc_fuzzing_helper
 
 .PHONY: all
-all: $(OUTPUT)fuzz $(OUTPUT)fuzz_libprotobuf_mutator $(OUTPUT)fuzz_afl $(OUTPUT)fuzz_symcc
+all: $(OUTPUT)fuzz $(OUTPUT)fuzz_libprotobuf_mutator $(OUTPUT)fuzz_afl $(OUTPUT)fuzz_symcc $(SYMCC_FUZZING_HELPER)
 
 $(OUTPUT)fuzz_libprotobuf_mutator: $(OUTPUT)fuzz_target_libprotobuf_mutator.o $(OUTPUT)fuzz_target.pb.o $(LIBZ_A)
 	$(CXX) $(LDFLAGS) -fsanitize=address,fuzzer $(OUTPUT)fuzz_target_libprotobuf_mutator.o $(OUTPUT)fuzz_target.pb.o -o $@ $(LIBZ_A) -lprotobuf-mutator-libfuzzer -lprotobuf-mutator -lprotobuf
@@ -151,16 +152,16 @@ $(ZLIB_SYMCC)/Makefile: \
 $(LIBZ_A_SYMCC): $(ZLIB_SYMCC)/Makefile
 	cd $(ZLIB_SYMCC) && $(MAKE)
 
-$(OUTPUT)symcc/build/bin/symcc_fuzzing_helper:
+$(SYMCC_FUZZING_HELPER):
 	cargo install --root $(OUTPUT)symcc/build --path symcc/util/symcc_fuzzing_helper
 
 .PHONY: symcc
-symcc: $(OUTPUT)fuzz_symcc $(OUTPUT)fuzz_afl $(OUTPUT)symcc/build/bin/symcc_fuzzing_helper
+symcc: $(OUTPUT)fuzz_symcc $(OUTPUT)fuzz_afl $(SYMCC_FUZZING_HELPER)
 	rm -rf $(OUTPUT_AFL)/master $(OUTPUT_AFL)/slave1 $(OUTPUT_AFL)/symcc_1
 	tmux \
 		new-session "$(AFL_FUZZ) -M master -i seed -o $(OUTPUT_AFL) -m none -- $(OUTPUT)fuzz_afl" \; \
 		new-window "$(AFL_FUZZ) -S slave1 -i seed -o $(OUTPUT_AFL) -m none -- $(OUTPUT)fuzz_afl" \; \
-		new-window "(OUTPUT)symcc/build/bin/symcc_fuzzing_helper -o $(OUTPUT_AFL) -a slave1 -n symcc_1 -v -- $(OUTPUT)fuzz_symcc"
+		new-window "$(SYMCC_FUZZING_HELPER) -o $(OUTPUT_AFL) -a slave1 -n symcc_1 -v -- $(OUTPUT)fuzz_symcc"
 
 .PHONY: fmt
 fmt:
