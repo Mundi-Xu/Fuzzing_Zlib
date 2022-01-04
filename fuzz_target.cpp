@@ -887,7 +887,7 @@ static void ExecutePlan(struct PlanExecution *PE) {
   if (Strategy == Z_DEFAULT_STRATEGY && GetDictSize(PE) == 0 &&
       DeflateOpCount == 0 && FinishOpCount == 0) {
     if (Debug)
-      Print(stderr, "assert(deflateBound(&strm) >= %u);\n",
+      Print(stderr, "assert(deflateBound(&Strm) >= %u);\n",
             ActualCompressedSize);
     assert((unsigned long)Bound >= (unsigned long)ActualCompressedSize);
   }

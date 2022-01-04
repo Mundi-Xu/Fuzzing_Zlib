@@ -21,6 +21,10 @@ CC=clang
 CXX=clang++
 AFLCC=afl-clang-lto
 AFLCXX=afl-clang-lto++
+AFLFLAGS=AFL_USE_ASAN=1
+SCC=clang-11 # symcc only support LLVM 8 through 11
+SCXX=clang++-11
+SLLVM=/usr/lib/llvm-11/cmake
 AFL_FUZZ=afl-fuzz
 OUTPUT_AFL?=$(OUTPUT)afl_out
 PROTOBUF_PATH=$(OUTPUT)libprotobuf-mutator/build/external.protobuf
@@ -59,7 +63,7 @@ afl: $(OUTPUT)fuzz_afl
 FUZZ_AFL_OBJS=$(OUTPUT)fuzz_target_afl.o $(OUTPUT)afl_driver.o $(LIBZ_A_AFL)
 
 $(OUTPUT)fuzz_afl: $(FUZZ_AFL_OBJS)
-	AFL_USE_ASAN=1 $(AFLCXX) $(LDFLAGS) -o $@ $(FUZZ_AFL_OBJS)
+	$(AFLFLAGS) $(AFLCXX) $(LDFLAGS) -o $@ $(FUZZ_AFL_OBJS)
 
 $(OUTPUT)fuzz_target.o: fuzz_target.cpp | fmt
 	$(CC) $(CFLAGS) -x c -fsanitize=address,fuzzer -DZLIB_CONST -I$(OUTPUT) -c fuzz_target.cpp -o $@
@@ -68,7 +72,7 @@ $(OUTPUT)fuzz_target_libprotobuf_mutator.o: fuzz_target.cpp $(OUTPUT)fuzz_target
 	$(CXX) $(CXXFLAGS) -fsanitize=address,fuzzer -DUSE_LIBPROTOBUF_MUTATOR -DZLIB_CONST -I$(OUTPUT) -c fuzz_target.cpp -o $@
 
 $(OUTPUT)fuzz_target_afl.o: fuzz_target.cpp | fmt
-	AFL_USE_ASAN=1 $(AFLCC) $(CFLAGS) -x c -DZLIB_CONST -I$(OUTPUT) -c fuzz_target.cpp -o $@
+	$(AFLFLAGS) $(AFLCC) $(CFLAGS) -x c -DZLIB_CONST -I$(OUTPUT) -c fuzz_target.cpp -o $@
 
 $(OUTPUT)fuzz_target_symcc.o: fuzz_target.cpp $(SYMCC) | fmt
 	$(SYMCC) $(CFLAGS) -x c -DZLIB_CONST -I$(OUTPUT) -c fuzz_target.cpp -o $@
@@ -117,21 +121,24 @@ $(LIBZ_A): $(ZLIB)/Makefile
 
 $(ZLIB_AFL)/Makefile: zlib-ng/CMakeLists.txt
 	mkdir -p $(ZLIB_AFL) && \
-		AFL_USE_ASAN=1 cmake \
+		$(AFLFLAGS) cmake \
 			-S zlib-ng \
 			-B $(ZLIB_AFL) \
 			-DCMAKE_C_COMPILER=$(AFLCC) \
 			$(ZLIB_NG_CMFLAGS)
 
 $(LIBZ_A_AFL): $(ZLIB_AFL)/Makefile
-	cd $(ZLIB_AFL) && AFL_USE_ASAN=1 $(MAKE)
+	cd $(ZLIB_AFL) && $(AFLFLAGS) $(MAKE)
 
 $(OUTPUT)symcc/build/Makefile: symcc/CMakeLists.txt
 	mkdir -p $(OUTPUT)symcc/build && \
 		cmake -S symcc \
+		-DCMAKE_C_COMPILER=$(SCC) \
+		-DCMAKE_CXX_COMPILER=$(SCXX) \
 		-B $(OUTPUT)symcc/build \
 		-DQSYM_BACKEND=ON \
 		-DZ3_TRUST_SYSTEM_VERSION=ON \
+		-DLLVM_DIR=$(SLLVM) \
 		$(SYMCC_CMFLAGS)
 
 $(SYMCC): $(OUTPUT)symcc/build/Makefile
