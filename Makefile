@@ -54,7 +54,7 @@ $(OUTPUT)fuzz: $(OUTPUT)fuzz_target.o $(LIBZ_A)
 
 .PHONY: afl
 afl: $(OUTPUT)fuzz_afl
-	$(AFL_FUZZ) -i seed -o $(OUTPUT_AFL) -- $(OUTPUT)fuzz_afl
+	$(AFL_FUZZ) -i seed -o $(OUTPUT_AFL) -t 1000+ -- $(OUTPUT)fuzz_afl
 
 FUZZ_AFL_OBJS=$(OUTPUT)fuzz_target_afl.o $(OUTPUT)afl_driver.o $(LIBZ_A_AFL)
 
@@ -159,8 +159,8 @@ $(SYMCC_FUZZING_HELPER):
 symcc: $(OUTPUT)fuzz_symcc $(OUTPUT)fuzz_afl $(SYMCC_FUZZING_HELPER)
 	rm -rf $(OUTPUT_AFL)/master $(OUTPUT_AFL)/slave1 $(OUTPUT_AFL)/symcc_1
 	tmux \
-		new-session "$(AFL_FUZZ) -M master -i seed -o $(OUTPUT_AFL) -m none -- $(OUTPUT)fuzz_afl" \; \
-		new-window "$(AFL_FUZZ) -S slave1 -i seed -o $(OUTPUT_AFL) -m none -- $(OUTPUT)fuzz_afl" \; \
+		new-session "$(AFL_FUZZ) -M master -i seed -o $(OUTPUT_AFL) -m none -t 1000+ -- $(OUTPUT)fuzz_afl" \; \
+		new-window "$(AFL_FUZZ) -S slave1 -i seed -o $(OUTPUT_AFL) -m none -t 1000+ -- $(OUTPUT)fuzz_afl" \; \
 		new-window "$(SYMCC_FUZZING_HELPER) -o $(OUTPUT_AFL) -a slave1 -n symcc_1 -v -- $(OUTPUT)fuzz_symcc"
 
 .PHONY: fmt
