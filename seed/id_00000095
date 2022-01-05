@@ -1,0 +1,6 @@
+level: PB_Z_LEVEL2
+inflate_ops {
+  inflate {
+    avail_in: 9
+  }
+}

@@ -1,0 +1,33 @@
+level: PB_Z_LEVEL8
+window_bits: PB_WB_GZIP
+dict: "@2"
+deflate_ops {
+  deflate_params {
+    avail_out: 44
+    strategy: PB_Z_FIXED
+  }
+}
+deflate_ops {
+  deflate {
+    avail_in: 42
+    avail_out: -50331648
+  }
+}
+deflate_ops {
+}
+inflate_ops {
+  inflate {
+    avail_in: 5
+  }
+}
+inflate_ops {
+  inflate {
+    avail_in: 8
+    avail_out: 2304
+  }
+}
+tail_size: 5
+bit_flips: 2048
+bit_flips: 91
+bit_flips: 2049
+bit_flips: 26

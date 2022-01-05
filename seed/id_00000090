@@ -1,0 +1,25 @@
+data: ":\353\\\\\\377\\\\\\\\\\\353\353\353\353\353\353\353\353\353\353\353\353\353\353\353\353\353\353\353\353\353p\0007\000\353\353\353"
+level: PB_Z_LEVEL3
+window_bits: PB_WB_RAW
+dict: ")"
+deflate_ops {
+  deflate {
+    avail_in: 4
+    avail_out: 4
+    flush: PB_DEFLATE_Z_BLOCK
+  }
+}
+deflate_ops {
+  deflate {
+    avail_in: 4
+    avail_out: 4
+    flush: PB_DEFLATE_Z_BLOCK
+  }
+}
+deflate_ops {
+  deflate {
+    avail_in: 4
+    avail_out: 4
+    flush: PB_DEFLATE_Z_BLOCK
+  }
+}

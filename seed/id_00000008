@@ -1,0 +1,12 @@
+data: ";"
+window_bits: PB_WB_RAW
+mem_level: PB_MEM_LEVEL1
+strategy: PB_Z_RLE
+dict: "4"
+deflate_ops {
+  deflate {
+    avail_in: 255
+    avail_out: 4
+  }
+}
+finish_avail_outs: 4

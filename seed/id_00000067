@@ -1,0 +1,22 @@
+data: "8"
+deflate_ops {
+  deflate {
+    avail_out: 1
+  }
+}
+deflate_ops {
+  deflate {
+    avail_out: 1
+  }
+}
+deflate_ops {
+  deflate {
+    avail_out: 16645889
+  }
+}
+deflate_ops {
+  deflate {
+    avail_in: 1
+    avail_out: 1
+  }
+}
